@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+
+\title{Quantifying Narrative Surprise: A Computational Framework for Detecting Plot Twists via Predictive Divergence}
+
+\author{
+    Devashish Juyal\textsuperscript{1} \and Yuganshi Agrawal\textsuperscript{2} \\[0.5em]
+    \textsuperscript{1}Department of Electrical Engineering and Computer Science \\
+    \textsuperscript{2}Department of Statistics \\
+    University of Michigan, Ann Arbor
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+\textbf{Background.}
+Plot twists and narrative surprises are fundamental to reader engagement in fiction, yet computational methods for their detection and quantification remain underdeveloped. Traditional approaches to narrative analysis rely on hand-coded features or post-hoc annotation, failing to capture the reader's real-time predictive experience as a story unfolds.
+
+\vspace{0.5em}
+\noindent
+\textbf{Problem.}
+We address the challenge of automatically detecting and measuring narrative surprise---moments where story events deviate significantly from reader expectations. We frame this as a \emph{sequential anomaly detection} task: given the narrative context up to position $t$, how surprising is the actual event at position $t+1$ relative to what a reader (or model) would predict?
+
+\vspace{0.5em}
+\noindent
+\textbf{Method.}
+We propose a two-stage predictive divergence framework. First, for each story chunk, we use a large language model (GPT-4o-mini) to generate (1) a \emph{business-as-usual} (BAU) prediction $\hat{y}_t$ of what typically happens next given prior context, and (2) a present-tense summary $y_t$ of the actual subsequent event. Second, we embed both sentences using OpenAI's \texttt{text-embedding-3-large} model and compute semantic divergence via three complementary metrics: cosine distance, Euclidean distance, and KL divergence (after softmax normalization). We further augment our analysis with Natural Language Inference (NLI) classification using RoBERTa-large-MNLI to detect logical contradictions between predictions and outcomes. Peak detection with Gaussian smoothing identifies statistically significant surprise spikes corresponding to plot twists.
+
+\vspace{0.5em}
+\noindent
+\textbf{Data.}
+We evaluate our framework on a corpus of 183 thriller short stories (approximately 270,000 words) collected from online fiction platforms, alongside 12 classic novels including \emph{Frankenstein}, \emph{Pride and Prejudice}, and \emph{The Hound of the Baskervilles}.
+
+\vspace{0.5em}
+\noindent
+\textbf{Results.}
+Our experiments reveal that LLM predictions diverge substantially from actual story events at narratively significant moments. Across the thriller corpus, we observe a mean cosine distance of $0.573 \pm 0.208$ between predicted and actual events, with detected peaks ($z > 2.0$) clustering at positions corresponding to human-identified plot twists. At these peaks, cosine distances exceed $1.0$ (indicating near-orthogonal or opposing semantic content), and NLI classification shows 25\% of prediction--outcome pairs labeled as \textsc{Contradiction} compared to 5\% \textsc{Entailment}. The three divergence metrics exhibit strong positive correlation ($r > 0.85$ between cosine and Euclidean; $r > 0.70$ for KL divergence), validating their complementary utility. Baseline comparison against ``The Tortoise and the Hare'' (a predictable fable) confirms significantly lower surprise variance ($\sigma = 0.211$) and fewer detected anomalies.
+
+\vspace{0.5em}
+\noindent
+\textbf{Implications.}
+Our findings demonstrate that narrative surprise can be operationalized as the divergence between model-generated expectations and actual story outcomes. This framework enables: (1) \emph{automated twist detection} for content analysis at scale, (2) \emph{objective story evaluation metrics} for creative writing assessment, (3) \emph{training signals for narrative generation} models that aim to produce engaging plot structures, and (4) \emph{large-scale computational literary studies} of suspense patterns across genres, time periods, and cultures. The strong performance of embedding-based metrics suggests that modern LLMs have internalized sufficient narrative conventions to serve as proxies for reader expectations, opening new avenues for human--AI collaborative storytelling research.
+
+\vspace{1em}
+\noindent
+\textbf{Keywords:} narrative surprise, plot twist detection, computational narratology, large language models, semantic embeddings, anomaly detection, natural language inference
+\end{abstract}
+
+\end{document}
